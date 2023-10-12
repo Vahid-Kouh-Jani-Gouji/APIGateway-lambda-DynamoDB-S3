@@ -130,29 +130,12 @@
 
     <div class="row">
         <div class="leftcolumn">
-            <div class="card">
-                <h2>TITLE HEADING</h2>
-                <h5>Title description, Dec 7, 2017</h5>
-                <div class="fakeimg" style="height:200px;">Image</div>
-                <p>Some text..</p>
-                <p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do
-                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                    exercitation ullamco.</p>
-            </div>
-            <div class="card">
-                <h2>TITLE HEADING</h2>
-                <h5>Title description, Sep 2, 2017</h5>
-                <div class="fakeimg" style="height:200px;">Image</div>
-                <p>Some text..</p>
-                <p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do
-                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                    exercitation ullamco.</p>
-            </div>
+         
             <div id="uploadform">
-                <form id="uploadForm" >
+                <form id="uploadForm">
                     <h2>Upload Image and Personal Info</h2>
 
-                                       <!-- Text inputs for personal information -->
+                    <!-- Text inputs for personal information -->
                     <label for="name">Name:</label>
                     <input type="text" name="name" id="name" required><br>
 
@@ -164,17 +147,22 @@
                 <button id="submitForm">Submit</button>
             </div>
             <div>
-                <table id="itemsTable" border="1">
+                <table id="data-table">
                     <thead>
-                      <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                      </tr>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+
+                        </tr>
                     </thead>
-                    <tbody></tbody>
-                  </table>
-                  
+                    <tbody id="table-body">
+                        <!-- Data will be inserted here -->
+                    </tbody>
+                </table>
+
+
             </div>
         </div>
         <div class="rightcolumn">
@@ -224,7 +212,7 @@
             jsonData[key] = value;
         });
 
-     
+
         // Send JSON data to Lambda function
         fetch('https://ooeze7i9y8.execute-api.eu-central-1.amazonaws.com/dev/save', {
             method: 'POST',
@@ -243,6 +231,47 @@
                 // Handle any errors
             });
     });
+
 </script>
+<script>
+    // Function to delete a row
+    function deleteRow(row) {
+        const rowIndex = row.rowIndex;
+        const table = document.getElementById('data-table');
+        table.deleteRow(rowIndex);
+    }
+
+    // Fetch data from your Lambda endpoint
+    fetch('https://ooeze7i9y8.execute-api.eu-central-1.amazonaws.com/dev/edit', {
+        method: 'GET',
+        mode: 'cors', // Ensure that CORS is enabled in your API Gateway
+    })
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('table-body');
+
+            data.forEach(item => {
+                const row = tableBody.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                const cell3 = row.insertCell(2);
+                
+                const cell4 = row.insertCell(3);
+
+                cell1.innerHTML = item.id.S; // Assuming 'id' is an attribute in your DynamoDB item
+                cell2.innerHTML = item.name.S; // Replace 'name' with the appropriate attribute
+                cell3.innerHTML = item.email.S; // Replace 'email' with the appropriate attribute
+                
+                cell4.innerHTML = '<button onclick="deleteRow(this.parentNode.parentNode)">Delete</button>';
+            });
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+        
+</script>
+
+
 
 </html>
