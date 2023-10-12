@@ -121,7 +121,7 @@
     </div>
 
     <div class="topnav">
-        <a href="./homepage.html">Home Page</a>
+        <a href="#uploadform">save product</a>
         <a href="#"></a>
         <a
             href="https://haushaltsbuch.auth.eu-central-1.amazoncognito.com/oauth2/authorize?response_type=token&client_id=704inp8b1vhes29v3ajbaaaj8r&redirect_uri=https://main.d20ldbddf5hcx2.amplifyapp.com/view/wizard.html">Register</a>
@@ -147,6 +147,21 @@
                 <p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do
                     eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
                     exercitation ullamco.</p>
+            </div>
+            <div id="uploadform">
+                <form id="uploadForm" >
+                    <h2>Upload Image and Personal Info</h2>
+
+                                       <!-- Text inputs for personal information -->
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" id="name" required><br>
+
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" id="email" required><br>
+
+
+                </form>
+                <button id="submitForm">Submit</button>
             </div>
         </div>
         <div class="rightcolumn">
@@ -182,5 +197,39 @@
 
 
 </body>
+
+<script>
+    document.getElementById("submitForm").addEventListener("click", function () {
+        // Serialize form data to JSON
+        const form = document.getElementById("uploadForm");
+        const formData = new FormData(form);
+        const jsonData = {};
+
+
+
+        formData.forEach((value, key) => {
+            jsonData[key] = value;
+        });
+
+     
+        // Send JSON data to Lambda function
+        fetch('https://ooeze7i9y8.execute-api.eu-central-1.amazonaws.com/dev/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify(jsonData),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Handle the response from the Lambda function as needed
+            })
+            .catch(error => {
+                console.error(error);
+                // Handle any errors
+            });
+    });
+</script>
 
 </html>
