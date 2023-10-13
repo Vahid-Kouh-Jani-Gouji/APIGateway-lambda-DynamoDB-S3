@@ -123,30 +123,36 @@
     <div class="topnav">
         <a href="#uploadform">save product</a>
         <a href="#"></a>
-        <a
-            href="https://haushaltsbuch.auth.eu-central-1.amazoncognito.com/oauth2/authorize?response_type=token&client_id=704inp8b1vhes29v3ajbaaaj8r&redirect_uri=https://main.d20ldbddf5hcx2.amplifyapp.com/view/wizard.html">Register</a>
-        <a href="#" style="float:right">Profile</a>
-    </div>
+        
+    </div><br>
 
     <div class="row">
-        <div class="leftcolumn">
-         
+        <div class="leftcolumn" style="text-align: center;">
+
             <div id="uploadform">
                 <form id="uploadForm">
-                    <h2>Upload Image and Personal Info</h2>
+                    <h2> Personal Info</h2>
 
                     <!-- Text inputs for personal information -->
-                    <label for="name">Name:</label>
-                    <input type="text" name="name" id="name" required><br>
+                   
 
                     <label for="email">Email:</label>
                     <input type="email" name="email" id="email" required><br>
 
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" id="name" required><br>
 
-                </form>
+
+                </form><br>
                 <button id="submitForm">Submit</button>
+                <button id="searchForm">Search</button>
+            </div><br><br>
+            <div id="results" style="text-align: center;">
+                <!-- Search results will be displayed here -->
             </div>
-            <div>
+            <br>
+
+            <div style="align-items: center; justify-content: center;">
                 <table id="data-table">
                     <thead>
                         <tr>
@@ -231,7 +237,50 @@
                 // Handle any errors
             });
     });
+    document.getElementById("searchForm").addEventListener("click", function () {
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
 
+        if (name || email) {
+            searchItems(name, email);
+        } else {
+            alert("Please enter a name or an email to search.");
+        }
+    });
+
+    function searchItems(name, email) {
+
+        const url = ` https://ooeze7i9y8.execute-api.eu-central-1.amazonaws.com/dev/get/${email}/${name}`;
+
+        fetch(url, {
+            method: 'GET',
+        })
+            .then(response => response.json())
+            .then(data => {
+                displayResults(data);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        document.getElementById("name").value=null;
+        document.getElementById("email").value=null;
+    }
+    function displayResults(results) {
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = ""; // Clear previous results
+
+        if (results.length === 0) {
+            resultsDiv.innerHTML = "No items found for the provided email.";
+        } else {
+            const list = document.createElement("ul");
+            results.forEach(item => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `ID: ${item.id.S}, Name: ${item.name.S}, Email: ${item.email.S}`;
+                list.appendChild(listItem);
+            });
+            resultsDiv.appendChild(list);
+        }
+    }
 </script>
 <script>
     // Function to delete a row
@@ -244,14 +293,14 @@
             method: 'DELETE',
             mode: 'cors', // Ensure that CORS is enabled in your API Gateway
         })
-        .then(response => {
-            if (response.status === 200) {
-                table.deleteRow(rowIndex); // Remove the row from the table
-            }
-        })
-        .catch(error => {
-            console.error(error);
-        });
+            .then(response => {
+                if (response.status === 200) {
+                    table.deleteRow(rowIndex); // Remove the row from the table
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
     }
 
     // Fetch data from your Lambda endpoint
@@ -268,13 +317,13 @@
                 const cell1 = row.insertCell(0);
                 const cell2 = row.insertCell(1);
                 const cell3 = row.insertCell(2);
-                
+
                 const cell4 = row.insertCell(3);
 
                 cell1.innerHTML = item.id.S; // Assuming 'id' is an attribute in your DynamoDB item
                 cell2.innerHTML = item.name.S; // Replace 'name' with the appropriate attribute
                 cell3.innerHTML = item.email.S; // Replace 'email' with the appropriate attribute
-                
+
                 cell4.innerHTML = '<button onclick="deleteRow(this.parentNode.parentNode)">Delete</button>';
             });
         })
@@ -282,7 +331,7 @@
             console.error(error);
         });
 
-        
+
 </script>
 
 
