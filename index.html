@@ -238,7 +238,20 @@
     function deleteRow(row) {
         const rowIndex = row.rowIndex;
         const table = document.getElementById('data-table');
-        table.deleteRow(rowIndex);
+        const item_id = row.cells[0].innerText; // Extract the ID from the table
+        // Call the Lambda function to delete the item
+        fetch(`https://ooeze7i9y8.execute-api.eu-central-1.amazonaws.com/dev/delete?id=${item_id}`, {
+            method: 'DELETE',
+            mode: 'cors', // Ensure that CORS is enabled in your API Gateway
+        })
+        .then(response => {
+            if (response.status === 200) {
+                table.deleteRow(rowIndex); // Remove the row from the table
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
     }
 
     // Fetch data from your Lambda endpoint
