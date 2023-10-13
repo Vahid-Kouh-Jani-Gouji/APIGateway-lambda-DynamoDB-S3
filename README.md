@@ -5,5 +5,5 @@ Check out the live demo of the website:[Demo Link](http://serverlesswebapp2023.s
 
 # Data Structure :
 
-![Software Structure ](./img/ServerlessWebAPP.drawio.png)
+![Software Structure ](./img/ServerlessWebAPP.png)
 
